@@ -1,6 +1,5 @@
 #include "toy_tapered.h"
 #include "toy_base.h"
-#include "../external/chess.hpp"
 
 #include <array>
 #include <iostream>
@@ -12,18 +11,16 @@
 
 using namespace std;
 using namespace Toy;
-using namespace chess;
 
 struct Trace
 {
     int32_t material[6][2]{};
     int32_t pst[6][64][2]{};
     int32_t bishop_pair[2]{};
-    int32_t mobility[6][2]{};
+    int32_t tempo[2]{};
 };
 
 constexpr std::array<int32_t, 6> material = {S(69, 118), S(299, 354), S(313, 358), S(401, 654), S(829, 1240), S(0, 0)};
-//constexpr std::array<int32_t, 6> mobility = {S(16, 17), S(4, 5), S(5, 6), S(4, 5), S(3, 4), S(5, 6)};
 constexpr std::array<std::array<int32_t, 64>, 6> pst =
 {{
     {{
@@ -94,13 +91,13 @@ constexpr std::array<std::array<int32_t, 64>, 6> pst =
 }};
 
 constexpr int32_t bishop_pair = S(21, 68);
-constexpr std::array<int32_t, 6> mobility = {S(68, 116), S(295, 349), S(310, 353), S(394, 643), S(815, 1219), S(0, 0)};
 
 static Trace trace_evaluate(const Position& position)
 {
     Trace trace{};
     std::array<int, 2> bishop_counts{};
-
+    trace.tempo[0]++;
+    trace.tempo[1]++;
     for (int i = 0; i < 64; i++)
     {
         auto piece = position.pieces[i];
@@ -110,35 +107,10 @@ static Trace trace_evaluate(const Position& position)
             continue;
         }
 
-        Bitboard atks;
-        switch (piece.type()) {
-          case PieceType::PAWN:
-            atks = chess::attacks::pawn(piece.color(), i);
-            break;
-          case PieceType::KNIGHT:
-            atks = chess::attacks::knight(i);
-            break;
-          case PieceType::BISHOP:
-            atks = chess::attacks::bishop(i, position.occ());
-            break;
-          case PieceType::ROOK:
-            atks = chess::attacks::rook(i, position.occ());
-            break;
-          case PieceType::QUEEN:
-            atks = chess::attacks::queen(i, position.occ());
-            break;
-          case PieceType::KING:
-            atks = chess::attacks::king(i);
-            break;
-        }
-        int numAttacks = atks.count();
-
-
         if (piece < Pieces::BlackPawn)
         {
             const int materialIndex = static_cast<int>(piece) - static_cast<int>(Pieces::WhitePawn);
             trace.material[materialIndex][0]++;
-            trace.mobility[materialIndex][0] += numAttacks;
             trace.pst[materialIndex][i^56][0]++;
             if (piece == Pieces::WhiteBishop)
             {
@@ -150,7 +122,6 @@ static Trace trace_evaluate(const Position& position)
         {
             const int materialIndex = static_cast<int>(piece) - static_cast<int>(Pieces::BlackPawn);
             trace.material[materialIndex][1]++;
-            trace.mobility[materialIndex][1] += numAttacks;
             trace.pst[materialIndex][i][1]++;
 
             if (piece == Pieces::BlackBishop)
@@ -175,7 +146,7 @@ static coefficients_t get_coefficients(const Trace& trace)
     get_coefficient_array(coefficients, trace.material, 6);
     get_coefficient_array_2d(coefficients, trace.pst, 6, 64);
     get_coefficient_single(coefficients, trace.bishop_pair);
-    get_coefficient_array(coefficients, trace.mobility, 6);
+    get_coefficient_single(coefficients, trace.tempo);
     return coefficients;
 }
 
@@ -185,7 +156,7 @@ parameters_t ToyEvalTapered::get_initial_parameters()
     get_initial_parameter_array(parameters, material, 6);
     get_initial_parameter_array_2d(parameters, pst, 6, 64);
     get_initial_parameter_single(parameters, bishop_pair);
-    get_initial_parameter_array(parameters, mobility, 6);
+    get_initial_parameter_single(parameters, tempo);
     return parameters;
 }
 
@@ -242,6 +213,6 @@ void ToyEvalTapered::print_parameters(const parameters_t& parameters)
     print_array(ss, parameters, index, "material", 6);
     print_array(ss, parameters, index, "pst", 384);
     print_single(ss, parameters, index, "bishop_pair");
-    print_array(ss, parameters, index, "mobility", 6);
+    print_single(ss, parameters, index, "tempo");
     cout << ss.str() << "\n";
 }

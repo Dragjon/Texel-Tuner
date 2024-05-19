@@ -203,30 +203,78 @@ struct Trace
     tune_t endgame_scale;
 
     int material[6][2]{};
-    int pst_rank[48][2]{};
-    int pst_file[48][2]{};
+    int pst[6][64][2]{};
     int mobilities[5][2]{};
 };
 
 const i32 phases[] = {0, 1, 1, 2, 4, 0};
 const i32 max_material[] = {147, 521, 521, 956, 1782, 0, 0};
 const i32 material[] = {S(89, 147), S(350, 521), S(361, 521), S(479, 956), S(1046, 1782), 0};
-const i32 pst_rank[] = {
-    0,         S(-3, 0),  S(-3, -1), S(-1, -1), S(1, 0),  S(5, 3),  0,        0,          // Pawn
-    S(-2, -5), S(0, -3),  S(1, -1),  S(3, 3),   S(4, 4),  S(5, 1),  S(2, 0),  S(-15, 1),  // Knight
-    S(0, -2),  S(2, -1),  S(2, 0),   S(2, 0),   S(2, 0),  S(2, 0),  S(-1, 0), S(-10, 2),  // Bishop
-    S(0, -3),  S(-1, -3), S(-2, -2), S(-2, 0),  S(0, 2),  S(2, 2),  S(1, 3),  S(2, 1),    // Rook
-    S(2, -11), S(3, -8),  S(2, -3),  S(0, 2),   S(0, 5),  S(-1, 5), S(-4, 7), S(-2, 4),   // Queen
-    S(-1, -6), S(1, -2),  S(-1, 0),  S(-4, 3),  S(-1, 5), S(5, 4),  S(5, 2),  S(5, -6),   // King
+const i32 pst[6][64] = {
+    {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+    },
+
+    {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+    },
+
+    {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+    },
+    {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+    },
+    {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+    },
+    {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+    },
 };
-const i32 pst_file[] = {
-    S(-1, 1),  S(-2, 1),  S(-1, 0), S(0, -1), S(1, 0),  S(2, 0),  S(2, 0),  S(-1, 0),   // Pawn
-    S(-4, -3), S(-1, -1), S(0, 1),  S(2, 3),  S(2, 3),  S(2, 0),  S(1, -1), S(-1, -3),  // Knight
-    S(-2, -1), 0,         S(1, 0),  S(0, 1),  S(1, 1),  S(0, 1),  S(2, 0),  S(-1, -1),  // Bishop
-    S(-2, 0),  S(-1, 1),  S(0, 1),  S(1, 0),  S(2, -1), S(1, 0),  S(1, 0),  S(-1, -1),  // Rook
-    S(-2, -3), S(-1, -1), S(-1, 0), S(0, 1),  S(0, 2),  S(1, 2),  S(2, 0),  S(1, -1),   // Queen
-    S(-2, -5), S(2, -1),  S(-1, 1), S(-4, 2), S(-4, 2), S(-2, 2), S(2, -1), S(0, -5),   // King
-};
+
 
 const i32 mobilities[] = {S(8, 5), S(7, 7), S(3, 5), S(3, 2), S(-5, -1)};
 
@@ -260,15 +308,9 @@ static Trace eval(Position& pos) {
                 score += material[p];
                 TraceIncr(material[p]);
 
-                const int rank = sq / 8;
-                const int file = sq % 8;
+                int pstSq = sq;
 
-                score += pst_rank[p * 8 + rank] * 8;
-                TraceAdd(pst_rank[p * 8 + rank], 8);
-
-                score += pst_file[p * 8 + file] * 8;
-                TraceAdd(pst_file[p * 8 + file], 8);
-
+                score += pst[p][sq];
 
                 u64 mobility = 0;
                 if(p == Knight) {
@@ -312,8 +354,6 @@ static int32_t round_value(tune_t value)
     return static_cast<int32_t>(round(value));
 }
 
-#if TAPERED
-
 static void print_parameter(std::stringstream& ss, const pair_t parameter)
 {
     const auto mg = round_value(parameter[static_cast<int32_t>(PhaseStages::Midgame)]);
@@ -327,12 +367,6 @@ static void print_parameter(std::stringstream& ss, const pair_t parameter)
         ss << "S(" << mg << ", " << eg << ")";
     }
 }
-#else
-static void print_parameter(std::stringstream& ss, const tune_t parameter)
-{
-    ss << round_value(std::round(parameter));
-}
-#endif
 
 static void print_single(std::stringstream& ss, const parameters_t& parameters, int& index, const std::string& name)
 {
@@ -449,8 +483,7 @@ parameters_t FourkuEval::get_initial_parameters()
 {
     parameters_t parameters;
     get_initial_parameter_array(parameters, material, 6);
-    get_initial_parameter_array(parameters, pst_rank, 48);
-    get_initial_parameter_array(parameters, pst_file, 48);
+    get_initial_parameter_array_2d(parameters, pst, 6, 64);
     get_initial_parameter_array(parameters, mobilities, 5);
     return parameters;
 }
@@ -459,8 +492,7 @@ static coefficients_t get_coefficients(const Trace& trace)
 {
     coefficients_t coefficients;
     get_coefficient_array(coefficients, trace.material, 6);
-    get_coefficient_array(coefficients, trace.pst_rank, 48);
-    get_coefficient_array(coefficients, trace.pst_file, 48);
+    get_coefficient_array_2d(coefficients, trace.pst, 6, 64);
     get_coefficient_array(coefficients, trace.mobilities, 5);
     return coefficients;
 }
@@ -475,8 +507,7 @@ void FourkuEval::print_parameters(const parameters_t& parameters)
     stringstream ss;
     print_max_material(ss, parameters_copy);
     print_array(ss, parameters_copy, index, "material", 6);
-    print_pst(ss, parameters_copy, index, "pst_rank");
-    print_pst(ss, parameters_copy, index, "pst_file");
+    print_array_2d(ss, parameters_copy, index, "pst", 6, 64);
     print_array(ss, parameters_copy, index, "mobilities", 5);
     cout << ss.str() << "\n";
 }
